@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ფსიქოლოგიის ტესტი - მენიუ</title>
+    <title>ფსიქოლოგიის ტესტი</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700&display=swap"
       rel="stylesheet"
@@ -47,36 +47,6 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       }
 
-      /* Menu Styles */
-      .menu-screen h1 {
-        text-align: center;
-        margin-bottom: 30px;
-        font-size: 1.8rem;
-      }
-      .menu-grid {
-        display: grid;
-        gap: 15px;
-      }
-      .menu-btn {
-        background: var(--card);
-        border: 1px solid var(--border);
-        color: var(--text);
-        padding: 20px;
-        border-radius: 12px;
-        cursor: pointer;
-        text-align: left;
-        transition: all 0.3s;
-      }
-      .menu-btn:hover {
-        border-color: var(--accent);
-        background: rgba(108, 139, 255, 0.1);
-      }
-      .menu-btn h3 {
-        margin-bottom: 5px;
-        color: var(--accent);
-      }
-
-      /* Quiz Styles */
       .header {
         display: flex;
         justify-content: space-between;
@@ -84,26 +54,33 @@
         color: var(--muted);
         font-size: 0.9rem;
       }
+
       .question-text {
         font-size: 1.2rem;
         font-weight: 600;
         margin-bottom: 25px;
         line-height: 1.5;
       }
+
       .options-grid {
         display: grid;
         gap: 12px;
       }
+
       .option {
         background: var(--card);
         border: 2px solid var(--border);
         padding: 15px 20px;
         border-radius: 12px;
         cursor: pointer;
+        transition: all 0.2s;
         display: flex;
         align-items: center;
         gap: 12px;
-        transition: 0.2s;
+      }
+
+      .option:hover {
+        border-color: var(--accent);
       }
       .option.selected {
         border-color: var(--accent);
@@ -117,21 +94,24 @@
         border-color: var(--wrong);
         background: rgba(239, 68, 68, 0.2);
       }
+
       .checkbox {
         width: 20px;
         height: 20px;
         border: 2px solid var(--muted);
         border-radius: 4px;
       }
+
       .selected .checkbox {
         background: var(--accent);
         border-color: var(--accent);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
       }
 
       .btn-container {
         margin-top: 30px;
       }
-      button.main-btn {
+      button {
         width: 100%;
         padding: 15px;
         border-radius: 12px;
@@ -142,6 +122,7 @@
         cursor: pointer;
         font-size: 1rem;
       }
+
       button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
@@ -160,43 +141,16 @@
   </head>
   <body>
     <div class="container">
-      <div id="menu-ui" class="menu-screen">
-        <h1>ფსიქოლოგიის ტესტი</h1>
-        <div class="menu-grid">
-          <button class="menu-btn" onclick="startQuiz('all')">
-            <h3>სრული ტესტი</h3>
-            <p>250-ვე კითხვა ერთად</p>
-          </button>
-          <button class="menu-btn" onclick="startQuiz('group1')">
-            <h3>ჯგუფი 1</h3>
-            <p>კითხვები: 1 - 40</p>
-          </button>
-          <button class="menu-btn" onclick="startQuiz('group2')">
-            <h3>ჯგუფი 2</h3>
-            <p>კითხვები: 41 - 80</p>
-          </button>
-          <button class="menu-btn" onclick="startQuiz('group3')">
-            <h3>ჯგუფი 3</h3>
-            <p>კითხვები: 81 - 120</p>
-          </button>
-        </div>
-      </div>
-
-      <div id="quiz-ui" style="display: none">
+      <div id="quiz-ui">
         <div class="header">
-          <span id="progress"></span>
+          <span id="progress">იტვირთება...</span>
           <span id="score">ქულა: 0</span>
         </div>
-        <div class="question-text" id="q-text"></div>
+        <div class="question-text" id="q-text">გთხოვთ დაელოდოთ...</div>
         <div class="options-grid" id="options-box"></div>
         <div id="explanation-box" class="explain"></div>
         <div class="btn-container">
-          <button
-            id="action-btn"
-            class="main-btn"
-            onclick="handleAction()"
-            disabled
-          >
+          <button id="action-btn" onclick="handleAction()" disabled>
             აირჩიეთ პასუხი
           </button>
         </div>
@@ -205,60 +159,39 @@
       <div id="result-ui" style="display: none; text-align: center">
         <h2 style="font-size: 2rem; margin-bottom: 10px">ტესტი დასრულდა!</h2>
         <p id="final-stats" style="font-size: 1.2rem; color: var(--muted)"></p>
-        <button
-          class="main-btn"
-          onclick="location.reload()"
-          style="margin-top: 30px"
-        >
-          მთავარ მენიუში დაბრუნება
+        <button onclick="location.reload()" style="margin-top: 30px">
+          თავიდან დაწყება
         </button>
       </div>
     </div>
 
     <script>
-      let fullDatabase = [];
-      let activeQuestions = [];
+      let database = [];
       let currentIdx = 0;
       let points = 0;
       let selectedIndices = [];
       let isChecked = false;
 
-      // 1. მონაცემების ჩატვირთვა
-      async function loadData() {
+      // 1. JSON ფაილის ჩატვირთვა
+      async function loadDatabase() {
         try {
           const response = await fetch("questions.json");
-          fullDatabase = await response.json();
-        } catch (e) {
-          alert("შეცდომა: questions.json ფაილი ვერ მოიძებნა!");
+          database = await response.json();
+          renderQuestion();
+        } catch (error) {
+          document.getElementById("q-text").innerText =
+            "შეცდომა: questions.json ვერ მოიძებნა!";
+          console.error("Error loading JSON:", error);
         }
-      }
-
-      // 2. ტესტის დაწყება რეჟიმის მიხედვით
-      function startQuiz(mode) {
-        if (fullDatabase.length === 0) return;
-
-        if (mode === "all") {
-          activeQuestions = [...fullDatabase];
-        } else if (mode === "group1") {
-          activeQuestions = fullDatabase.slice(0, 40);
-        } else if (mode === "group2") {
-          activeQuestions = fullDatabase.slice(40, 80);
-        } else if (mode === "group3") {
-          activeQuestions = fullDatabase.slice(80, 120);
-        }
-
-        document.getElementById("menu-ui").style.display = "none";
-        document.getElementById("quiz-ui").style.display = "block";
-        renderQuestion();
       }
 
       function renderQuestion() {
-        const data = activeQuestions[currentIdx];
+        const data = database[currentIdx];
         isChecked = false;
         selectedIndices = [];
 
         document.getElementById("progress").innerText =
-          `კითხვა: ${currentIdx + 1}/${activeQuestions.length}`;
+          `კითხვა: ${currentIdx + 1}/${database.length}`;
         document.getElementById("q-text").innerText = data.q;
         document.getElementById("explanation-box").style.display = "none";
 
@@ -280,7 +213,8 @@
 
       function selectOption(idx) {
         if (isChecked) return;
-        const data = activeQuestions[currentIdx];
+
+        const data = database[currentIdx];
         const isMulti = data.correct.length > 1;
 
         if (isMulti) {
@@ -291,9 +225,11 @@
           selectedIndices = [idx];
         }
 
+        // ვიზუალიზაცია
         document.querySelectorAll(".option").forEach((opt, i) => {
           opt.classList.toggle("selected", selectedIndices.includes(i));
         });
+
         document.getElementById("action-btn").disabled =
           selectedIndices.length === 0;
       }
@@ -305,7 +241,7 @@
 
       function checkAnswer() {
         isChecked = true;
-        const data = activeQuestions[currentIdx];
+        const data = database[currentIdx];
         const options = document.querySelectorAll(".option");
 
         const selectedTexts = selectedIndices
@@ -333,7 +269,7 @@
 
       function nextQuestion() {
         currentIdx++;
-        if (currentIdx < activeQuestions.length) renderQuestion();
+        if (currentIdx < database.length) renderQuestion();
         else showResults();
       }
 
@@ -341,10 +277,11 @@
         document.getElementById("quiz-ui").style.display = "none";
         document.getElementById("result-ui").style.display = "block";
         document.getElementById("final-stats").innerText =
-          `თქვენ დააგროვეთ ${points} ქულა ${activeQuestions.length}-დან.`;
+          `თქვენ დააგროვეთ ${points} ქულა ${database.length}-დან.`;
       }
 
-      loadData();
+      // დაწყება
+      loadDatabase();
     </script>
   </body>
 </html>
