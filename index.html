@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ფსიქოლოგიის ტესტი - პროგრესის შენახვით</title>
+    <title>ფსიქოლოგიის ტესტი - სრული ვერსია</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700&display=swap"
       rel="stylesheet"
@@ -39,7 +39,7 @@
 
       .container {
         width: 100%;
-        max-width: 750px;
+        max-width: 800px;
         background: var(--surface);
         padding: 30px;
         border-radius: 20px;
@@ -50,13 +50,13 @@
       /* Menu Styles */
       .menu-screen h1 {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
         font-size: 1.8rem;
       }
       .menu-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        gap: 12px;
       }
       .full-width {
         grid-column: span 2;
@@ -68,24 +68,74 @@
         padding: 15px;
         border-radius: 12px;
         cursor: pointer;
-        text-align: center;
         transition: 0.3s;
-        position: relative;
       }
       .menu-btn:hover {
         border-color: var(--accent);
         background: rgba(108, 139, 255, 0.1);
       }
       .menu-btn h3 {
-        margin-bottom: 5px;
         color: var(--accent);
         font-size: 1rem;
+        margin-bottom: 4px;
       }
       .saved-score {
         font-size: 0.8rem;
         color: var(--correct);
         font-weight: 600;
         margin-top: 5px;
+      }
+
+      .study-btn {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        width: 100%;
+        margin-bottom: 20px;
+        cursor: pointer;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      /* Study Modal */
+      #study-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 100;
+        padding: 20px;
+        overflow-y: auto;
+      }
+      .modal-content {
+        background: var(--surface);
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+      }
+      .study-item {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border);
+      }
+      .study-q {
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+      }
+      .study-a {
+        color: var(--correct);
+        font-size: 0.95rem;
       }
 
       /* Quiz UI */
@@ -97,15 +147,11 @@
         font-size: 0.85rem;
         font-weight: 600;
       }
-      .score-box {
-        color: var(--accent);
-      }
       .question-text {
         font-size: 1.2rem;
         font-weight: 600;
         margin-bottom: 25px;
         line-height: 1.5;
-        min-height: 60px;
       }
       .options-grid {
         display: grid;
@@ -120,7 +166,6 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        transition: 0.2s;
       }
       .option.selected {
         border-color: var(--accent);
@@ -134,13 +179,11 @@
         border-color: var(--wrong);
         background: rgba(239, 68, 68, 0.15);
       }
-
       .checkbox {
         width: 18px;
         height: 18px;
         border: 2px solid var(--muted);
         border-radius: 4px;
-        flex-shrink: 0;
       }
       .selected .checkbox {
         background: var(--accent);
@@ -161,7 +204,6 @@
         color: white;
         font-weight: 700;
         cursor: pointer;
-        font-size: 1rem;
       }
       button.secondary-btn {
         flex: 1;
@@ -183,9 +225,7 @@
         background: rgba(108, 139, 255, 0.05);
         border-left: 4px solid var(--accent);
         border-radius: 4px;
-        font-size: 0.9rem;
         display: none;
-        line-height: 1.4;
       }
 
       @media (max-width: 500px) {
@@ -200,50 +240,55 @@
   </head>
   <body>
     <div class="container">
-      <div id="menu-ui" class="menu-screen">
+      <div id="menu-ui">
         <h1>ფსიქოლოგიის ტესტი</h1>
+
+        <button class="study-btn" onclick="openStudyModal()">
+          📖 სწორი პასუხების ნახვა (250 კითხვა)
+        </button>
+
         <div class="menu-grid">
           <button
             class="menu-btn full-width"
             onclick="startQuiz(0, 250, 'all')"
           >
             <h3>სრული ტესტი</h3>
-            <p>1 - 250 კითხვა</p>
+            <p>1 - 250 კითხვა (125 ქულა)</p>
             <div id="score-all" class="saved-score"></div>
           </button>
           <button class="menu-btn" onclick="startQuiz(0, 40, 'g1')">
             <h3>ჯგუფი 1</h3>
-            <p>1 - 40</p>
+            <p>1-40</p>
             <div id="score-g1" class="saved-score"></div>
           </button>
           <button class="menu-btn" onclick="startQuiz(40, 80, 'g2')">
             <h3>ჯგუფი 2</h3>
-            <p>41 - 80</p>
+            <p>41-80</p>
             <div id="score-g2" class="saved-score"></div>
           </button>
           <button class="menu-btn" onclick="startQuiz(80, 120, 'g3')">
             <h3>ჯგუფი 3</h3>
-            <p>81 - 120</p>
+            <p>81-120</p>
             <div id="score-g3" class="saved-score"></div>
           </button>
           <button class="menu-btn" onclick="startQuiz(120, 160, 'g4')">
             <h3>ჯგუფი 4</h3>
-            <p>121 - 160</p>
+            <p>121-160</p>
             <div id="score-g4" class="saved-score"></div>
           </button>
           <button class="menu-btn" onclick="startQuiz(160, 200, 'g5')">
             <h3>ჯგუფი 5</h3>
-            <p>161 - 200</p>
+            <p>161-200</p>
             <div id="score-g5" class="saved-score"></div>
           </button>
           <button class="menu-btn" onclick="startQuiz(200, 240, 'g6')">
             <h3>ჯგუფი 6</h3>
-            <p>201 - 240</p>
+            <p>201-240</p>
             <div id="score-g6" class="saved-score"></div>
           </button>
           <button class="menu-btn" onclick="startQuiz(240, 250, 'g7')">
             <h3>ჯგუფი 7</h3>
-            <p>241 - 250</p>
+            <p>241-250</p>
             <div id="score-g7" class="saved-score"></div>
           </button>
         </div>
@@ -252,7 +297,7 @@
       <div id="quiz-ui" style="display: none">
         <div class="header">
           <span id="local-progress"></span>
-          <span class="score-box"
+          <span style="color: var(--accent)"
             >ქულა: <span id="current-points">0</span></span
           >
           <span id="global-progress"></span>
@@ -281,14 +326,37 @@
       </div>
 
       <div id="result-ui" style="display: none; text-align: center">
-        <h2 style="font-size: 1.8rem; margin-bottom: 10px">ტესტი დასრულდა!</h2>
+        <h2 style="font-size: 1.8rem; margin-bottom: 10px">დასრულდა!</h2>
         <p
           id="final-stats"
           style="font-size: 1.1rem; color: var(--muted); margin-bottom: 25px"
         ></p>
         <button class="main-btn" onclick="finishAndGoHome()">
-          დასრულება და მთავარზე დაბრუნება
+          დასრულება და დაბრუნება
         </button>
+      </div>
+    </div>
+
+    <div id="study-modal">
+      <div class="modal-content">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+          "
+        >
+          <h2>ყველა სწორი პასუხი</h2>
+          <button
+            class="secondary-btn"
+            onclick="closeStudyModal()"
+            style="flex: none; padding: 8px 20px"
+          >
+            დახურვა
+          </button>
+        </div>
+        <div id="study-list"></div>
       </div>
     </div>
 
@@ -299,68 +367,82 @@
       let currentIdx = 0;
       let globalStartIdx = 0;
       let totalPoints = 0;
-      let currentGroupKey = ""; // ინახავს მიმდინარე ჯგუფის სახელს (g1, g2...)
+      let currentGroupKey = "";
 
       async function loadData() {
         try {
           const response = await fetch("questions.json");
           fullDatabase = await response.json();
           updateMenuScores();
+          generateStudyList();
         } catch (e) {
-          alert("შეცდომა: questions.json ვერ მოიძებნა!");
+          alert("questions.json ვერ მოიძებნა!");
         }
       }
 
       function updateMenuScores() {
-        const groups = ["all", "g1", "g2", "g3", "g4", "g5", "g6", "g7"];
-        groups.forEach((key) => {
+        ["all", "g1", "g2", "g3", "g4", "g5", "g6", "g7"].forEach((key) => {
           const saved = localStorage.getItem("psych_score_" + key);
-          const element = document.getElementById("score-" + key);
-          if (saved && element) {
-            element.innerText = `ბოლო შედეგი: ${saved} ქულა`;
-          }
+          if (saved)
+            document.getElementById("score-" + key).innerText =
+              `ბოლო: ${saved} ქულა`;
         });
       }
 
-      function startQuiz(start, end, groupKey) {
-        if (fullDatabase.length === 0) return;
+      function generateStudyList() {
+        const list = document.getElementById("study-list");
+        list.innerHTML = fullDatabase
+          .map(
+            (item, i) => `
+        <div class="study-item">
+            <span class="study-q">${i + 1}. ${item.q}</span>
+            <span class="study-a">✔ ${item.correct.join(", ")}</span>
+        </div>
+    `,
+          )
+          .join("");
+      }
 
+      function openStudyModal() {
+        document.getElementById("study-modal").style.display = "block";
+      }
+      function closeStudyModal() {
+        document.getElementById("study-modal").style.display = "none";
+      }
+
+      function startQuiz(start, end, groupKey) {
         currentGroupKey = groupKey;
         globalStartIdx = start;
         activeQuestions = fullDatabase.slice(start, end);
-        userAnswers = new Array(activeQuestions.length).fill(null).map(() => ({
+        userAnswers = activeQuestions.map(() => ({
           selected: [],
           isChecked: false,
           isCorrect: false,
         }));
-
         currentIdx = 0;
         totalPoints = 0;
-
         document.getElementById("menu-ui").style.display = "none";
         document.getElementById("quiz-ui").style.display = "block";
-        document.getElementById("result-ui").style.display = "none";
         renderQuestion();
       }
 
       function renderQuestion() {
         const data = activeQuestions[currentIdx];
         const userState = userAnswers[currentIdx];
-
         const localCurrent = currentIdx + 1;
+
         document.getElementById("local-progress").innerText =
           `${localCurrent} / ${activeQuestions.length}`;
         document.getElementById("global-progress").innerText =
-          `${globalStartIdx + localCurrent} / ${globalStartIdx + activeQuestions.length}`;
+          `${globalStartIdx + localCurrent} / 250`;
         document.getElementById("current-points").innerText =
           totalPoints.toFixed(1);
-
         document.getElementById("q-text").innerText = data.q;
+
         const expBox = document.getElementById("explanation-box");
         const actionBtn = document.getElementById("action-btn");
-        const prevBtn = document.getElementById("prev-btn");
-
-        prevBtn.style.display = currentIdx > 0 ? "block" : "none";
+        document.getElementById("prev-btn").style.display =
+          currentIdx > 0 ? "block" : "none";
 
         const box = document.getElementById("options-box");
         box.innerHTML = "";
@@ -369,12 +451,10 @@
           const div = document.createElement("div");
           div.className = "option";
           if (userState.selected.includes(i)) div.classList.add("selected");
-
           if (userState.isChecked) {
             if (data.correct.includes(opt)) div.classList.add("correct");
             else if (userState.selected.includes(i)) div.classList.add("wrong");
           }
-
           div.innerHTML = `<div class="checkbox"></div> <span>${opt}</span>`;
           div.onclick = () => selectOption(i);
           box.appendChild(div);
@@ -384,9 +464,7 @@
           expBox.innerText = data.explain;
           expBox.style.display = "block";
           actionBtn.innerText =
-            currentIdx === activeQuestions.length - 1
-              ? "შედეგების ნახვა"
-              : "შემდეგი კითხვა";
+            currentIdx === activeQuestions.length - 1 ? "შედეგები" : "შემდეგი";
           actionBtn.disabled = false;
         } else {
           expBox.style.display = "none";
@@ -397,52 +475,34 @@
 
       function selectOption(idx) {
         if (userAnswers[currentIdx].isChecked) return;
-        const data = activeQuestions[currentIdx];
         const userState = userAnswers[currentIdx];
-        const isMulti = data.correct.length > 1;
-
+        const isMulti = activeQuestions[currentIdx].correct.length > 1;
         if (isMulti) {
-          const foundAt = userState.selected.indexOf(idx);
-          if (foundAt > -1) userState.selected.splice(foundAt, 1);
+          const i = userState.selected.indexOf(idx);
+          if (i > -1) userState.selected.splice(i, 1);
           else userState.selected.push(idx);
-        } else {
-          userState.selected = [idx];
-        }
+        } else userState.selected = [idx];
         renderQuestion();
       }
 
       function handleAction() {
-        const userState = userAnswers[currentIdx];
-        if (!userState.isChecked) {
-          checkAnswer();
-        } else {
-          nextQuestion();
-        }
-      }
-
-      function checkAnswer() {
-        const data = activeQuestions[currentIdx];
-        const userState = userAnswers[currentIdx];
-
-        const selectedTexts = userState.selected
-          .map((i) => data.options[i])
-          .sort();
-        const correctTexts = [...data.correct].sort();
-
-        userState.isCorrect =
-          JSON.stringify(selectedTexts) === JSON.stringify(correctTexts);
-        userState.isChecked = true;
-
-        if (userState.isCorrect) totalPoints += 0.5;
-        renderQuestion();
-      }
-
-      function nextQuestion() {
-        if (currentIdx < activeQuestions.length - 1) {
-          currentIdx++;
+        if (!userAnswers[currentIdx].isChecked) {
+          const data = activeQuestions[currentIdx];
+          const userState = userAnswers[currentIdx];
+          const selected = userState.selected
+            .map((i) => data.options[i])
+            .sort();
+          const correct = [...data.correct].sort();
+          userState.isCorrect =
+            JSON.stringify(selected) === JSON.stringify(correct);
+          userState.isChecked = true;
+          if (userState.isCorrect) totalPoints += 0.5;
           renderQuestion();
         } else {
-          showResults();
+          if (currentIdx < activeQuestions.length - 1) {
+            currentIdx++;
+            renderQuestion();
+          } else showResults();
         }
       }
 
@@ -456,11 +516,8 @@
       function showResults() {
         document.getElementById("quiz-ui").style.display = "none";
         document.getElementById("result-ui").style.display = "block";
-        const maxPoints = activeQuestions.length * 0.5;
         document.getElementById("final-stats").innerText =
-          `თქვენ დააგროვეთ ${totalPoints.toFixed(1)} ქულა ${maxPoints.toFixed(1)}-დან.`;
-
-        // ქულის შენახვა localStorage-ში
+          `დაგროვილი ქულა: ${totalPoints.toFixed(1)} / ${(activeQuestions.length * 0.5).toFixed(1)}`;
         localStorage.setItem(
           "psych_score_" + currentGroupKey,
           totalPoints.toFixed(1),
