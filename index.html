@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ფსიქოლოგიის ტესტი</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f1a; --card: #1c2035; --accent: #6c8bff; --text: #e8eaf6;
+    --correct: #22c55e; --wrong: #ef4444; --border: #2a3050;
+  }
+  body {
+    font-family: 'Noto Sans Georgian', sans-serif;
+    background: var(--bg); color: var(--text);
+    display: flex; justify-content: center; padding: 20px;
+  }
+  .quiz-box { max-width: 600px; width: 100%; background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid var(--border); }
+  h2 { margin-bottom: 20px; color: var(--accent); font-size: 1.2rem; }
+  .option-btn {
+    width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--border);
+    border-radius: 8px; background: #151827; color: white; cursor: pointer;
+    text-align: left; transition: 0.2s;
+  }
+  .option-btn:hover { background: #232844; }
+  .correct { background: var(--correct) !important; border-color: #16a34a; }
+  .wrong { background: var(--wrong) !important; border-color: #dc2626; }
+  #explanation { display: none; margin-top: 15px; padding: 15px; background: rgba(108,139,255,0.1); border-left: 4px solid var(--accent); }
+  .controls { display: flex; justify-content: space-between; margin-top: 25px; }
+  .nav-btn { padding: 10px 20px; border-radius: 5px; border: none; background: var(--accent); color: white; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="quiz-box">
+  <div id="progress" style="font-size: 0.8rem; color: #7b82a8; margin-bottom: 10px;"></div>
+  <h2 id="question-text">იტვირთება...</h2>
+  <div id="options-container"></div>
+  <div id="explanation">
+    <strong>განმარტება:</strong> <span id="exp-content"></span>
+  </div>
+  <div class="controls">
+    <button class="nav-btn" onclick="prev()">წინა</button>
+    <button class="nav-btn" onclick="next()">შემდეგი</button>
+  </div>
+</div>
+
+<script>
+  let questions = [];
+  let currentIdx = 0;
+
+  async function init() {
+    try {
+      const res = await fetch('questions.json');
+      questions = await res.json();
+      render();
+    } catch (e) {
+      document.getElementById('question-text').innerText = "შეცდომა: მონაცემები ვერ ჩაიტვირთა.";
+    }
+  }
+
+  function render() {
+    const q = questions[currentIdx];
+    document.getElementById('progress').innerText = `კითხვა ${currentIdx + 1} / ${questions.length}`;
+    document.getElementById('question-text').innerText = q.q;
+    document.getElementById('explanation').style.display = 'none';
+    document.getElementById('exp-content').innerText = q.explain;
+
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerText = opt;
+      btn.onclick = () => {
+        if (opt === q.correct) {
+          btn.classList.add('correct');
+          document.getElementById('explanation').style.display = 'block';
+        } else {
+          btn.classList.add('wrong');
+        }
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  function next() { if(currentIdx < questions.length - 1) { currentIdx++; render(); } }
+  function prev() { if(currentIdx > 0) { currentIdx--; render(); } }
+
+  init();
+</script>
+
+</body>
+</html>
