@@ -1,242 +1,903 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ka">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ფსიქოლოგიის ტესტების ბაზა</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;700&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ფსიქოლოგია - ტესტი</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --accent: #38bdf8;
-            --correct: #22c55e;
-            --wrong: #ef4444;
-            --text: #f1f5f9;
-            --muted: #94a3b8;
+      :root {
+        --bg: #0d0f1a;
+        --surface: #151827;
+        --card: #1c2035;
+        --border: #2a3050;
+        --accent: #6c8bff;
+        --accent2: #a78bfa;
+        --correct: #22c55e;
+        --wrong: #ef4444;
+        --text: #e8eaf6;
+        --muted: #7b82a8;
+        --gold: #fbbf24;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Noto Sans Georgian", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+          radial-gradient(
+            ellipse at 20% 20%,
+            rgba(108, 139, 255, 0.08) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 80% 80%,
+            rgba(167, 139, 250, 0.06) 0%,
+            transparent 60%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ===== MENU SCREEN ===== */
+      #menu-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+        position: relative;
+        z-index: 1;
+      }
+      .logo {
+        font-size: 0.75rem;
+        letter-spacing: 0.3em;
+        color: var(--accent);
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+        font-family: "Space Mono", monospace;
+      }
+      .title {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 900;
+        text-align: center;
+        background: linear-gradient(135deg, #e8eaf6, #6c8bff, #a78bfa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        line-height: 1.1;
+      }
+      .subtitle {
+        color: var(--muted);
+        font-size: 1rem;
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+      .menu-section {
+        width: 100%;
+        max-width: 640px;
+        margin-bottom: 2rem;
+      }
+      .menu-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.25em;
+        color: var(--muted);
+        text-transform: uppercase;
+        font-family: "Space Mono", monospace;
+        margin-bottom: 1rem;
+        padding-left: 0.25rem;
+      }
+      .btn-full {
+        display: block;
+        width: 100%;
+        padding: 1.1rem 1.5rem;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: "Noto Sans Georgian", sans-serif;
+        transition: all 0.2s;
+        box-shadow: 0 4px 24px rgba(108, 139, 255, 0.3);
+        margin-bottom: 1rem;
+      }
+      .btn-full:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 32px rgba(108, 139, 255, 0.4);
+      }
+      .groups-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.75rem;
+      }
+      .btn-group {
+        padding: 0.9rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: "Noto Sans Georgian", sans-serif;
+        transition: all 0.2s;
+        text-align: center;
+      }
+      .btn-group:hover {
+        border-color: var(--accent);
+        background: rgba(108, 139, 255, 0.1);
+        transform: translateY(-2px);
+      }
+      .btn-group .range {
+        display: block;
+        font-size: 0.7rem;
+        color: var(--muted);
+        font-family: "Space Mono", monospace;
+        margin-top: 0.2rem;
+      }
+
+      /* ===== QUIZ SCREEN ===== */
+      #quiz-screen {
+        display: none;
+        min-height: 100vh;
+        padding: 1rem;
+        position: relative;
+        z-index: 1;
+      }
+      .quiz-header {
+        max-width: 760px;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .back-btn {
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-family: "Noto Sans Georgian", sans-serif;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .back-btn:hover {
+        border-color: var(--accent);
+        color: var(--text);
+      }
+      .timer-box {
+        font-family: "Space Mono", monospace;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--accent);
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 0.4rem 1.1rem;
+        border-radius: 10px;
+        min-width: 90px;
+        text-align: center;
+        transition: color 0.3s;
+      }
+      .timer-box.urgent {
+        color: var(--wrong);
+        animation: pulse 1s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
         }
-        body { font-family: 'Noto Sans Georgian', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
-        .btn { padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; transition: 0.3s; font-weight: bold; }
-        .btn-menu { background: var(--card); color: var(--text); border: 1px solid var(--accent); }
-        .btn-menu:hover { background: var(--accent); color: var(--bg); }
-        .quiz-container { display: none; background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .stats { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 0.9rem; color: var(--muted); }
-        .timer { color: var(--accent); font-weight: bold; }
-        .question-text { font-size: 1.25rem; margin-bottom: 25px; line-height: 1.5; }
-        .options-grid { display: grid; gap: 12px; }
-        .option-btn { background: #334155; color: var(--text); border: 1px solid #475569; text-align: left; }
-        .option-btn:hover { background: #475569; }
-        .option-btn.correct-choice { background: var(--correct) !important; color: white; border-color: var(--correct); }
-        .option-btn.wrong-choice { background: var(--wrong) !important; color: white; border-color: var(--wrong); }
-        .nav-controls { display: flex; justify-content: space-between; margin-top: 30px; gap: 10px; }
-        .btn-nav { background: #475569; color: white; flex: 1; }
-        .btn-skip { background: #64748b; }
-        .btn-explain { background: #0ea5e9; margin-top: 15px; width: 100%; display: none; }
-        .explanation-box { display: none; margin-top: 15px; padding: 15px; background: rgba(56, 189, 248, 0.1); border-left: 4px solid var(--accent); border-radius: 4px; }
-        #results-screen { display: none; text-align: center; background: var(--card); padding: 40px; border-radius: 12px; }
+        50% {
+          opacity: 0.5;
+        }
+      }
+      .progress-info {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-family: "Space Mono", monospace;
+        white-space: nowrap;
+      }
+      .progress-bar-wrap {
+        max-width: 760px;
+        margin: 0 auto 1.5rem;
+        background: var(--card);
+        border-radius: 999px;
+        height: 6px;
+        border: 1px solid var(--border);
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        border-radius: 999px;
+        transition: width 0.4s ease;
+      }
+      .score-row {
+        max-width: 760px;
+        margin: 0 auto 1rem;
+        display: flex;
+        gap: 1rem;
+      }
+      .score-chip {
+        flex: 1;
+        text-align: center;
+        padding: 0.5rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        font-family: "Space Mono", monospace;
+      }
+      .score-chip.green {
+        background: rgba(34, 197, 94, 0.12);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: var(--correct);
+      }
+      .score-chip.red {
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: var(--wrong);
+      }
+      .score-chip.blue {
+        background: rgba(108, 139, 255, 0.12);
+        border: 1px solid rgba(108, 139, 255, 0.3);
+        color: var(--accent);
+      }
+      .card {
+        max-width: 760px;
+        margin: 0 auto 1rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2rem;
+        animation: fadeUp 0.3s ease;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .q-num {
+        font-family: "Space Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-bottom: 0.75rem;
+        letter-spacing: 0.1em;
+      }
+      .q-text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        line-height: 1.6;
+        color: var(--text);
+        margin-bottom: 1.5rem;
+      }
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .opt-btn {
+        width: 100%;
+        text-align: left;
+        padding: 0.9rem 1.1rem;
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        color: var(--text);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: "Noto Sans Georgian", sans-serif;
+        transition: all 0.18s;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        line-height: 1.4;
+      }
+      .opt-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        background: rgba(108, 139, 255, 0.08);
+      }
+      .opt-btn:disabled {
+        cursor: default;
+      }
+      .opt-btn.correct {
+        background: rgba(34, 197, 94, 0.15);
+        border-color: var(--correct);
+        color: #86efac;
+      }
+      .opt-btn.wrong {
+        background: rgba(239, 68, 68, 0.15);
+        border-color: var(--wrong);
+        color: #fca5a5;
+      }
+      .opt-btn.reveal-correct {
+        background: rgba(34, 197, 94, 0.1);
+        border-color: var(--correct);
+        color: #86efac;
+        border-style: dashed;
+      }
+      .opt-letter {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1.5px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-family: "Space Mono", monospace;
+        flex-shrink: 0;
+        transition: all 0.18s;
+        font-weight: 700;
+      }
+      .opt-btn.correct .opt-letter {
+        background: var(--correct);
+        border-color: var(--correct);
+        color: #fff;
+      }
+      .opt-btn.wrong .opt-letter {
+        background: var(--wrong);
+        border-color: var(--wrong);
+        color: #fff;
+      }
+      .opt-btn.reveal-correct .opt-letter {
+        background: rgba(34, 197, 94, 0.3);
+        border-color: var(--correct);
+        color: #86efac;
+      }
+
+      /* Nav buttons */
+      .nav-row {
+        max-width: 760px;
+        margin: 0 auto;
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .nav-btn {
+        flex: 1;
+        min-width: 120px;
+        padding: 0.85rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: "Noto Sans Georgian", sans-serif;
+        border: 1.5px solid var(--border);
+        transition: all 0.2s;
+        background: var(--card);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+      }
+      .nav-btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .nav-btn.primary:hover {
+        background: #5a7aee;
+      }
+      .nav-btn:hover:not(.primary) {
+        border-color: var(--accent);
+      }
+      .nav-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+
+      /* Explanation */
+      .explanation {
+        max-width: 760px;
+        margin: 1rem auto 0;
+        background: rgba(108, 139, 255, 0.06);
+        border: 1px solid rgba(108, 139, 255, 0.25);
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        animation: fadeUp 0.3s ease;
+      }
+      .explanation .exp-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        color: var(--accent);
+        text-transform: uppercase;
+        font-family: "Space Mono", monospace;
+        margin-bottom: 0.6rem;
+      }
+      .explanation p {
+        color: var(--text);
+        font-size: 0.9rem;
+        line-height: 1.65;
+      }
+
+      /* Results */
+      #results-screen {
+        display: none;
+        min-height: 100vh;
+        padding: 2rem;
+        position: relative;
+        z-index: 1;
+      }
+      .results-card {
+        max-width: 600px;
+        margin: 0 auto;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2.5rem;
+        text-align: center;
+      }
+      .results-title {
+        font-size: 2rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #6c8bff, #a78bfa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .results-score {
+        font-size: 4rem;
+        font-weight: 900;
+        font-family: "Space Mono", monospace;
+        color: var(--gold);
+        margin: 1rem 0;
+      }
+      .results-pct {
+        font-size: 1.1rem;
+        color: var(--muted);
+        margin-bottom: 2rem;
+      }
+      .results-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+        margin: 1.5rem 0 2rem;
+      }
+      .stat-box {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .stat-box .stat-val {
+        font-size: 1.8rem;
+        font-weight: 800;
+        font-family: "Space Mono", monospace;
+      }
+      .stat-box .stat-lbl {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+      .btn-restart {
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: #fff;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: "Noto Sans Georgian", sans-serif;
+        transition: all 0.2s;
+        box-shadow: 0 4px 24px rgba(108, 139, 255, 0.3);
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+      .btn-restart:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 32px rgba(108, 139, 255, 0.4);
+      }
+
+      /* saved indicator */
+      .saved-badge {
+        display: none;
+        max-width: 760px;
+        margin: 0.75rem auto 0;
+        text-align: right;
+        font-size: 0.75rem;
+        color: var(--correct);
+        font-family: "Space Mono", monospace;
+      }
+
+      @media (max-width: 480px) {
+        .card {
+          padding: 1.25rem;
+        }
+        .q-text {
+          font-size: 0.95rem;
+        }
+        .opt-btn {
+          font-size: 0.88rem;
+          padding: 0.75rem 0.9rem;
+        }
+        .quiz-header {
+          gap: 0.5rem;
+        }
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <div id="start-menu">
-            <div class="header">
-                <h1>ფსიქოლოგიის ტესტების ბაზა</h1>
-                <p>აირჩიეთ კითხვების რაოდენობა ან კონკრეტული ჯგუფი</p>
-            </div>
-            <div class="menu-grid">
-                <button class="btn btn-menu" onclick="startQuiz(250)">ყველა (250 კითხვა)</button>
-            </div>
-            <div class="menu-grid" id="groups-grid"></div>
-        </div>
+  </head>
+  <body>
+    <!-- MENU SCREEN -->
+    <div id="menu-screen">
+      <div class="logo">სასწავლო პლატფორმა</div>
+      <div class="title">ფსიქოლოგია</div>
+      <div class="subtitle">ბაზისური ტესტი · 250 კითხვა</div>
 
-        <div id="quiz-container" class="quiz-container">
-            <div class="stats">
-                <span id="progress-text">კითხვა 1 / 250</span>
-                <span class="timer">დრო: <span id="time-display">00:00</span></span>
-            </div>
-            <div id="question-text" class="question-text"></div>
-            <div id="options-container" class="options-grid"></div>
-            
-            <button id="explain-btn" class="btn btn-explain" onclick="toggleExplanation()">💡 ახსნა</button>
-            <div id="explanation-box" class="explanation-box"></div>
+      <div class="menu-section">
+        <div class="menu-label">სრული ტესტი</div>
+        <button class="btn-full" onclick="startQuiz('all')">
+          ▶ ყველა 250 კითხვა
+        </button>
+      </div>
 
-            <div class="nav-controls">
-                <button class="btn btn-nav" onclick="prevQuestion()">წინა</button>
-                <button class="btn btn-nav btn-skip" onclick="nextQuestion()">გამოტოვება</button>
-                <button class="btn btn-nav" onclick="nextQuestion()">შემდეგი</button>
-            </div>
-            <button class="btn btn-menu" style="width:100%; margin-top:20px;" onclick="saveProgress()">შენახვა</button>
-        </div>
-
-        <div id="results-screen">
-            <h2>ტესტი დასრულდა!</h2>
-            <p id="final-score" style="font-size: 2rem; margin: 20px 0;"></p>
-            <button class="btn btn-menu" onclick="location.reload()">თავიდან დაწყება</button>
-        </div>
+      <div class="menu-section">
+        <div class="menu-label">ჯგუფები (40 კითხვა)</div>
+        <div class="groups-grid" id="groups-grid"></div>
+      </div>
     </div>
 
-    <script>
-        let allQuestions = [];
-        let currentQuestions = [];
-        let currentIdx = 0;
-        let score = 0;
-        let seconds = 0;
-        let timerInterval;
-        let userAnswers = {};
+    <!-- QUIZ SCREEN -->
+    <div id="quiz-screen">
+      <div class="quiz-header">
+        <button class="back-btn" onclick="goMenu()">← მენიუ</button>
+        <div class="progress-info" id="prog-info">1 / 40</div>
+        <div class="timer-box" id="timer">00:00</div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="prog-bar" style="width: 0%"></div>
+      </div>
+      <div class="score-row">
+        <div class="score-chip green" id="sc-correct">✓ 0</div>
+        <div class="score-chip red" id="sc-wrong">✗ 0</div>
+        <div class="score-chip blue" id="sc-skip">↷ 0</div>
+      </div>
 
-        async function loadData() {
-            try {
-                const response = await fetch('questions_250.json');
-                allQuestions = await response.json();
-                createGroups();
-                loadSavedProgress();
-            } catch (e) { console.error("Data load failed", e); }
+      <div class="card" id="q-card">
+        <div class="q-num" id="q-num"></div>
+        <div class="q-text" id="q-text"></div>
+        <div class="options" id="options"></div>
+      </div>
+
+      <div class="explanation" id="explanation" style="display: none">
+        <div class="exp-label">💡 ახსნა</div>
+        <p id="exp-text"></p>
+      </div>
+
+      <div class="saved-badge" id="saved-badge">✔ შენახულია</div>
+
+      <div class="nav-row" style="margin-top: 1rem">
+        <button class="nav-btn" id="btn-prev" onclick="prevQ()">← წინა</button>
+        <button class="nav-btn" id="btn-explain" onclick="showExplanation()">
+          💡 ახსნა
+        </button>
+        <button class="nav-btn" id="btn-skip" onclick="skipQ()">
+          ↷ გამოტოვება
+        </button>
+        <button class="nav-btn primary" id="btn-next" onclick="nextQ()">
+          შემდეგი →
+        </button>
+      </div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div id="results-screen">
+      <div class="results-card">
+        <div class="results-title">შედეგი</div>
+        <div class="results-score" id="res-score">0/0</div>
+        <div class="results-pct" id="res-pct"></div>
+        <div class="results-stats">
+          <div
+            class="stat-box"
+            style="
+              background: rgba(34, 197, 94, 0.1);
+              border: 1px solid rgba(34, 197, 94, 0.3);
+            "
+          >
+            <div
+              class="stat-val"
+              style="color: var(--correct)"
+              id="res-correct"
+            >
+              0
+            </div>
+            <div class="stat-lbl">სწორი</div>
+          </div>
+          <div
+            class="stat-box"
+            style="
+              background: rgba(239, 68, 68, 0.1);
+              border: 1px solid rgba(239, 68, 68, 0.3);
+            "
+          >
+            <div class="stat-val" style="color: var(--wrong)" id="res-wrong">
+              0
+            </div>
+            <div class="stat-lbl">არასწორი</div>
+          </div>
+          <div
+            class="stat-box"
+            style="
+              background: rgba(108, 139, 255, 0.1);
+              border: 1px solid rgba(108, 139, 255, 0.3);
+            "
+          >
+            <div class="stat-val" style="color: var(--accent)" id="res-skip">
+              0
+            </div>
+            <div class="stat-lbl">გამოტოვებული</div>
+          </div>
+        </div>
+        <div
+          style="color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem"
+          id="res-time"
+        ></div>
+        <button class="btn-restart" onclick="goMenu()">
+          ↩ მენიუში დაბრუნება
+        </button>
+      </div>
+    </div>
+
+    // ============================================================
+      // DATA (Corrected & Completed)
+      // ============================================================
+      const ALL_QUESTIONS = [
+        {q:"ფსიქოლოგიის განვითარების ეტაპია:",correct:"ბიჰევიორიზმი",options:["ბიჰევიორიზმი","სოციოლოგია","ფილოსოფია","ბოტანიკა"],explain:"ბიჰევიორიზმი (ქცევათმეცნიერება) ფსიქოლოგიის განვითარების ერთ-ერთი ძირითადი ეტაპია, რომელიც ჩამოყალიბდა ამერიკასა და რუსეთში. იგი ორიენტირებულია ქცევის შესწავლაზე."},
+        {q:"არისტოტელეს პირველ ფსიქოლოგიურ ნაშრომს ჰქვია:",correct:"პერიფსიქე",options:["პერიფსიქე","მეტაფიზიკა","ნიკომაქეს ეთიკა","პოლიტიკა"],explain:"\"პერიფსიქე\" (სულის შესახებ) - არისტოტელეს ფუნდამენტური ნაშრომი, სადაც სული განიხილება ცოცხალი სხეულის ფუნქციად."},
+        {q:"ფსიქოლოგიის კვლევის მეთოდია:",correct:"საუბარი და დაკვირვება",options:["საუბარი და დაკვირვება","ოპერაცია","გამოყვანა","გამოთვლა"],explain:"ფსიქოლოგიის მეთოდებია: დაკვირვება, ექსპერიმენტი, საუბარი, კითხვარი, ტესტი, ბიოგრაფიული მეთოდი და სხვ."},
+        {q:"ფსიქოლოგიის დარგია:",correct:"ზოოფსიქოლოგია, იურიდიული ფსიქოლოგია, ზოგადი ფსიქოლოგია",options:["ზოოფსიქოლოგია, იურიდიული ფსიქოლოგია, ზოგადი ფსიქოლოგია","ბიოქიმია, ფიზიკა","ეკონომიკა, ჟურნალისტიკა","ასტრონომია, გეოლოგია"],explain:"ფსიქოლოგიის მრავალი დარგი არსებობს: ზოგადი, სოციალური, კლინიკური, პედაგოგიური, ზოოფსიქოლოგია, იურიდიული და სხვ."},
+        {q:"ფსიქიკა არის:",correct:"ასახვისა და განცდის პროცესი",options:["ასახვისა და განცდის პროცესი","სხეულის ფიზიკური ფუნქცია","ქიმიური რეაქცია","მექანიკური პროცესი"],explain:"ფსიქიკა - ტვინის ფუნქცია, გარეგანი სინამდვილის ასახვა. მოიცავს: შეგრძნებას, აღქმას, წარმოსახვას, მეხსიერებას, აზროვნებას, ემოციებს, ნებას."},
+        {q:"ფსიქოლოგიის განვითარების პირველი ეტაპია:",correct:"მეტაფიზიკური ფსიქოლოგია",options:["მეტაფიზიკური ფსიქოლოგია","ბიჰევიორიზმი","კოგნიტური ფსიქოლოგია","ჰუმანისტური ფსიქოლოგია"],explain:"ფსიქოლოგიის პირველი ეტაპია მეტაფიზიკური ფსიქოლოგია, სადაც სწავლობდნენ ზებუნებრივ სულს. მეორეა ემპირიული (XVII ს.), მესამეა ბიჰევიორიზმი, მეოთხეა კოგნიტური."},
+        {q:"ფსიქიკის ორგანოა:",correct:"ტვინი",options:["ტვინი","გული","ღვიძლი","ფილტვი"],explain:"ფსიქიკის ორგანო ტვინია. სწორედ ტვინი ასახავს სინამდვილეს, ახდენს ინფორმაციის დამუშავებას და ქმნის ფსიქიკურ მოვლენებს."},
+        {q:"დაკვირვების სახეა:",correct:"თვითდაკვირვება და ინტროსპექცია",options:["თვითდაკვირვება და ინტროსპექცია","ექსპერიმენტი","ტესტირება","კითხვარი"],explain:"დაკვირვება შეიძლება იყოს: გარეგანი (სხვებზე) და შინაგანი — თვითდაკვირვება/ინტროსპექცია (საკუთარ ფსიქიკაზე)."},
+        {q:"ფსიქოლოგია არის მეცნიერება:",correct:"ფსიქიკური მოვლენების შესახებ",options:["ფსიქიკური მოვლენების შესახებ","სხეულის აგებულების შესახებ","ქიმიური ელემენტების შესახებ","სამყაროს წარმოშობის შესახებ"],explain:"ფსიქოლოგია (ბერძ. psyche - სული, logos - მეცნიერება) — მეცნიერება ფსიქიკური მოვლენებისა და ქცევის შესახებ."},
+        {q:"ფსიქიკურ პროცესებს მიეკუთვნება:",correct:"მეხსიერება, აღქმა, წარმოსახვა",options:["მეხსიერება, აღქმა, წარმოსახვა","ქცევა, სიარული","სუნთქვა, გულისცემა","ძილი, ჭამა"],explain:"ფსიქიკური პროცესებია: შეგრძნება, აღქმა, წარმოსახვა, მეხსიერება, აზროვნება, ყურადღება, ემოციები."},
+        {q:"ინტროსპექცია არის:",correct:"თვითდაკვირვება",options:["თვითდაკვირვება","სხვაზე დაკვირვება","ექსპერიმენტი","კითხვარი"],explain:"ინტროსპექცია (ლათ. introspectio — შიგნით ცქერა) — საკუთარი ფსიქიკური მდგომარეობისა და პროცესების დაკვირვება."},
+        {q:"ფსიქოლოგიის მეთოდია:",correct:"ექსპერიმენტი და ტესტირება",options:["ექსპერიმენტი და ტესტირება","ოპერაციული სიმ","მიკროსკოპიის","ბირთვული ანალიზი"],explain:"ფსიქოლოგიის მეთოდებია: დაკვირვება, ექსპერიმენტი, ტესტი, კითხვარი, საუბარი, სოციომეტრია, ბიოგრაფიული მეთოდი."},
+        {q:"ფსიქოლოგიის განვითარების მეორე ეტაპი იყო:",correct:"ემპირიული ფსიქოლოგია",options:["ემპირიული ფსიქოლოგია","ბიჰევიორიზმი","მეტაფიზიკური","კოგნიტური"],explain:"ემპირიული ფსიქოლოგია (XVII ს.) — ეყრდნობოდა გამოცდილებას (ემპირია = ცდა). ამ ეტაპზე ფსიქოლოგია ფილოსოფიიდან გამოეყო."},
+        {q:"ფსიქოანალიზის ავტორია:",correct:"ფროიდი",options:["ფროიდი","მასლოუ","პავლოვი","ვატსონი"],explain:"ზიგმუნდ ფროიდი (1856-1939) — ავსტრიელი ნევროლოგი, ფსიქოანალიზის ფუძემდებელი. ფსიქოანალიზი არის ფსიქოთერაპიის მეთოდი."},
+        {q:"ფროიდის მიხედვით, პიროვნებაში გამოიყოფა:",correct:"3 ქვესტრუქტურა",options:["3 ქვესტრუქტურა","2 ქვესტრუქტურა","4 ქვესტრუქტურა","5 ქვესტრუქტურა"],explain:"ფროიდმა პიროვნება დაყო 3 ნაწილად: ეგო (მე), სუპერ-ეგო (ზე-მე) და ეს (იდ). ასევე ფსიქიკა 3 სფეროდ: ცნობიერი, წინა-ცნობიერი, არაცნობიერი."},
+        {q:"სიკვდილის ინსტინქტს ფროიდმა უწოდა:",correct:"თანატოსი",options:["თანატოსი","ეროსი","ლიბიდო","სუბლიმაცია"],explain:"ფროიდის მიხედვით: ეროსი — სიცოცხლის/სიყვარულის ინსტინქტი; თანატოსი — სიკვდილის/განადგურების ინსტინქტი."},
+        {q:"სუპერ ეგო – ესაა პიროვნების:",correct:"მორალური ნორმები",options:["მორალური ნორმები","ძირითადი სურვილები","ცნობიერი გადაწყვეტილებები","ბიოლოგიური ინსტინქტები"],explain:"სუპერ-ეგო (ზე-მე) — საზოგადოებრივი ნორმები და მორალი, შინაგანი ცენზორი. ეს (იდ) — არაცნობიერი სურვილები. ეგო — შუამავალი."},
+        {q:"ჰუმანისტური ფსიქოლოგიის მიხედვით:",correct:"ადამიანი ბუნებით კეთილი არსებაა და მას შეუძლია თვითსრულყოფა",options:["ადამიანი ბუნებით კეთილი არსებაა და მას შეუძლია თვითსრულყოფა","ადამიანი მხოლოდ ქცევაა","ადამიანი ბოროტი ბუნებისაა","ადამიანი დეტერმინირებულია"],explain:"ჰუმანისტური ფსიქოლოგია (მასლოუ, როჯერსი, ჰორნი) — ადამიანს განიხილავს, როგორც თვითგამომჟღავნებისა და ზრდის მიდრეკილ არსებად."},
+        {q:"მოთხოვნილებების მასლოუსეულ იერარქიას უწოდებენ:",correct:"მასლოუს პირამიდას",options:["მასლოუს პირამიდას","მასლოუს სკალა","ფროიდის ტრიადა","ვატსონის მოდელი"],explain:"მასლოუს პირამიდაში საჭიროებები იერარქიულადაა: 1.ფიზიოლოგიური, 2.უსაფრთხოება, 3.კუთვნილება, 4.პატივისცემა, 5.თვითაქტუალიზაცია."},
+        {q:"ფსიქოლოგიის დარგია:",correct:"კლინიკური ფსიქოლოგია, სოციალური ფსიქოლოგია",options:["კლინიკური ფსიქოლოგია, სოციალური ფსიქოლოგია","ასტრონომია, ქიმია","ბოტანიკა, ზოოლოგია","გეოგრაფია, ბიოლოგია"],explain:"ფსიქოლოგიის დარგებია: ზოგადი, სოციალური, კლინიკური, პედაგოგიური, პათოფსიქოლოგია, იურიდიული, ზოოფსიქოლოგია..."},
+        {q:"ფსიქოლოგიის განვითარების ეტაპია:",correct:"ბიჰევიორიზმი",options:["ბიჰევიორიზმი","ქირომანტია","ასტროლოგია","ალქიმია"],explain:"ფსიქოლოგიის 4 ძირითადი ეტაპია: 1.მეტაფიზიკური, 2.ემპირიული, 3.ბიჰევიორიზმი, 4.კოგნიტური."},
+        {q:"ფსიქოლოგიის მეთოდია:",correct:"ტესტები და ექსპერიმენტი",options:["ტესტები და ექსპერიმენტი","ბირთვული სინთეზი","მაგნეტიზმი","ულტრაბგერა"],explain:"ექსპერიმენტი ლაბორატორიული ან ბუნებრივი შეიძლება იყოს. ტესტი — სტანდარტიზებული გაზომვის ინსტრუმენტი."},
+        {q:"რომელი არაა ფსიქოლოგიის დარგი:",correct:"დაკვირვება",options:["დაკვირვება","ზოოფსიქოლოგია","პედაგოგიური ფსიქოლოგია","კლინიკური ფსიქოლოგია"],explain:"დაკვირვება ფსიქოლოგიის მეთოდია, არა დარგი. ფსიქოლოგიის დარგებია: კლინიკური, პედაგოგიური, ზოოფსიქოლოგია..."},
+        {q:"თანამედროვე ფსიქოლოგიის კვლევის საგანია:",correct:"როგორც ადამიანის ქცევა, ისე მისი ფსიქიკა",options:["როგორც ადამიანის ქცევა, ისე მისი ფსიქიკა","მხოლოდ ქცევა","მხოლოდ ფსიქიკა","მხოლოდ ბიოლოგია"],explain:"თანამედროვე ფსიქოლოგია კვლევობს როგორც ფსიქიკას (შინაგან მდგომარეობებს), ასევე ქცევას (გარეგან გამოვლინებებს)."},
+        {q:"ჰუმანისტური ფსიქოლოგიის ფუძემდებელია:",correct:"როჯერსი, ჰორნი, მასლოუ",options:["როჯერსი, ჰორნი, მასლოუ","ფროიდი, ადლერი, იუნგი","ვატსონი, სკინერი, თორნდაიკი","პავლოვი, სეჩენოვი, ბეხტერი"],explain:"ჰუმანისტური ფსიქოლოგიის წარმომადგენლები: კარლ როჯერსი, კარენ ჰორნი, აბრაჰამ მასლოუ."},
+        {q:"ფორმულა S-R ეკუთვნოდა:",correct:"ბიჰევიორისტებს",options:["ბიჰევიორისტებს","ჰუმანისტებს","ფსიქოანალიტიკოსებს","კოგნიტივისტებს"],explain:"S-R (Stimulus-Response) — სტიმული-რეაქცია — ბიჰევიორიზმის ფუძე. ნეობიჰევიორისტებმა შემატეს P (პიროვნება): S-P-R."},
+        {q:"ფსიქიკის ანომალურ, პათოლოგიურად შეცვლილ ფორმებს სწავლობს:",correct:"პათოფსიქოლოგია",options:["პათოფსიქოლოგია","ზოოფსიქოლოგია","პედაგოგიური ფსიქოლოგია","სოციალური ფსიქოლოგია"],explain:"პათოფსიქოლოგია შეისწავლის ფსიქიკური პროცესების გადახრებს, დარღვევებს, ფსიქიკურ პათოლოგიებს."},
+        {q:"ფსიქოლოგიის მეთოდია:",correct:"ექსპერიმენტი",options:["ექსპერიმენტი","ოპერაცია","sინთეზი","ინჯექცია"],explain:"ექსპერიმენტი — მეცნიერული მეთოდი, სადაც პირობები კონტროლდება. ლაბორატორიული და ბუნებრივი ექსპერიმენტი განასხვავებენ."},
+        {q:"რომელი არაა ფსიქოლოგიის დარგი:",correct:"ექსპერიმენტი და ინტროსპექცია",options:["ექსპერიმენტი და ინტროსპექცია","კლინიკური ფსიქოლოგია","ზოოფსიქოლოგია","სოციალური ფსიქოლოგია"],explain:"ექსპერიმენტი და ინტროსპექცია ფსიქოლოგიის მეთოდებია, არა დარგები."},
+        {q:"კოგნიტური ფსიქოლოგია სწავლობს:",correct:"შემეცნებით პროცესებს",options:["შემეცნებით პროცესებს","ქცევის ნიმუშებს","ემოციებს","სოციალურ ურთიერთობებს"],explain:"კოგნიტური ფსიქოლოგია (XX ს. 60-იანი წლები) — ორიენტირებულია შემეცნებაზე: აღქმა, მეხსიერება, აზროვნება, ყურადღება, ენა."},
+        {q:"ფსიქოლოგიის ყველაზე ადრინდელი მეთოდია:",correct:"თვითდაკვირვება და ინტროსპექცია",options:["თვითდაკვირვება და ინტროსპექცია","ექსპერიმენტი","ტესტი","სოციომეტრია"],explain:"ინტროსპექცია — ყველაზე ძველი ფსიქოლოგიური მეთოდი. გამოიყენებოდა ემპირიული ფსიქოლოგიის ეტაპიდანვე."},
+        {q:"„ფსიქოლოგია\" არის:",correct:"ბერძნული სიტყვა",options:["ბერძნული სიტყვა","ლათინური სიტყვა","ინგლისური სიტყვა","ფრანგული სიტყვა"],explain:"\"ფსიქოლოგია\" ბერძნული წარმოშობისაა: psyche (სული) + logos (მეცნიერება, სწავლება)."},
+        {q:"მეტაფიზიკური ფსიქოლოგიის ეტაპზე სწავლობდნენ:",correct:"ზებუნებრივ სულს",options:["ზებუნებრივ სულს","ქცევას","შემეცნებით პროცესებს","სოციალურ ურთიერთობებს"],explain:"მეტაფიზიკური ეტაპი — ანტიკური ხანიდან XVII ს.-მდე. სული განიხილებოდა, როგორც ზებუნებრივი, ღვთაებრივი ძალა."},
+        {q:"ემპირიული ფსიქოლოგიის განვითარება დაიწყო:",correct:"მე-17 საუკუნეში",options:["მე-17 საუკუნეში","მე-15 საუკუნეში","მე-19 საუკუნეში","მე-20 საუკუნეში"],explain:"ემპირიული ფსიქოლოგია (XVII ს.) — ჯონ ლოკი, რენე დეკარტი. ეყრდნობოდა გამოცდილებას (ემპირია) და ცდას."},
+        {q:"ფსიქოლოგიურ მიმდინარეობას, რომელიც სწავლობდა ქცევას, ეწოდება:",correct:"ბიჰევიორიზმი",options:["ბიჰევიორიზმი","კოგნიტივიზმი","ჰუმანიზმი","ექზისტენციალიზმი"],explain:"ბიჰევიორიზმი (ინგ. behaviour — ქცევა) — XX ს. დასაწყისი. ჯ.ვატსონი. მხოლოდ გარეგანი ქცევა განიხილებოდა."},
+        {q:"სიტყვა ემპირია ნიშნავს:",correct:"ცდა და გამოცდილება",options:["ცდა და გამოცდილება","გონება","ვარაუდი","ბუნება"],explain:"ემპირია (ბერძ. empeiria) — ცდა, გამოცდილება. ემპირიული ფსიქოლოგია — გამოცდილებაზე დაფუძნებული."},
+        {q:"ფსიქოლოგიის მეთოდია:",correct:"კითხვარი, ტესტი, სოციომეტრიის მეთოდი",options:["კითხვარი, ტესტი, სოციომეტრიის მეთოდი","მიკროსკოპია, ტიტრაცია","ოპერაცია, ბიოფსია","კვამლის ანალიზი"],explain:"ფსიქოლოგიის მეთოდებია: დაკვირვება, ექსპერიმენტი, ტესტი, კითხვარი, საუბარი, სოციომეტრია, ბიოგრაფიული."},
+        {q:"ფსიქოლოგიის დარგია:",correct:"პედაგოგიური ფსიქოლოგია",options:["პედაგოგიური ფსიქოლოგია","პედიატრია","ანთროპოლოგია","ეთნოგრაფია"],explain:"პედაგოგიური ფსიქოლოგია სწავლობს სწავლა-აღზრდის ფსიქოლოგიურ კანონზომიერებებს."},
+        {q:"ინტროსპექცია ნიშნავს:",correct:"შიგნით ცქერას",options:["შიგნით ცქერას","გარეთ ცქერას","ლაბორატორიულ ანალიზს","სოციალურ კვლევას"],explain:"ინტროსპექცია (ლათ. introspectio — შიგნით ცქერა) — საკუთარი ფსიქიკური პროცესების დაკვირვება."},
+        {q:"ბიჰევიორიზმს ასევე უწოდებდნენ:",correct:"ქცევათმეცნიერებას",options:["ქცევათმეცნიერებას","სულის მეცნიერებას","გონების მეცნიერებას","გამოცდილების მეცნიერებას"],explain:"ბიჰევიორიზმი (ქცევათმეცნიერება) — ინგლ. behaviour (ქცევა). სწავლობდა ქცევას გარე სტიმულ-რეაქციის სქემით."},
+        {q:"კოგნიტური ფსიქოლოგია აღმოცენდა:",correct:"მე-20 საუკუნის 60-იან წლებში",options:["მე-20 საუკუნის 60-იან წლებში","მე-19 საუკუნეში","მე-20 საუკუნის 20-იან წლებში","მე-21 საუკუნეში"],explain:"კოგნიტური ფსიქოლოგია — 1960-იანი წლები. კომპიუტერის მეტაფორა გამოიყენა გონებისთვის. შემეცნებითი პროცესების შესწავლა."},
+        {q:"უარყოფითი ენერგიის დადებითი საქმიანობისკენ მიმართვას ფროიდმა უწოდა:",correct:"სუბლიმაცია",options:["სუბლიმაცია","კათარზისი","პროეცია","რეგრესია"],explain:"სუბლიმაცია — დაცვის მექანიზმი, სადაც ინსტინქტური ენერგია (სექსუალური/აგრესიული) სოციალურად მისაღებ საქმიანობად გარდაიქმნება (ხელოვნება, სპორტი)."},
+        {q:"სუბიექტის მისწრაფებას რაიმე მიზნის მისაღწევად უწოდებენ:",correct:"ლიბიდოს",options:["ლიბიდოს","სუბლიმაციას","კათარზისს","თანატოსს"],explain:"ლიბიდო (ლათ. libido — სიხარბე, სურვილი) — ფროიდის კონცეფციაში: სქესობრივი ენერგია, მამოძრავებელი ძალა."},
+        {q:"ფსიქოანალიზი არის:",correct:"ფსიქოთერაპიის მეთოდი",options:["ფსიქოთერაპიის მეთოდი","ფსიქოლოგიის დარგი","ნევროლოგიის ტესტი","სოციოლოგიური კვლევა"],explain:"ფსიქოანალიზი ფროიდის მიერ შექმნილი ფსიქოთერაპიული მეთოდია, რომელიც იყენებს სიზმრების ანალიზს, თავისუფალ ასოციაციებს."},
+        {q:"ნაშრომი „სიზმრების ახსნა\" ეკუთვნოდა:",correct:"ზიგმუნდ ფროიდს",options:["ზიგმუნდ ფროიდს","კარლ იუნგს","კარლ როჯერსს","აბრაჰამ მასლოუს"],explain:"\"სიზმრების ახსნა\" (1900) — ფროიდის ძირითადი ნაშრომი, სადაც სიზმარი განიხილება, როგორც გზა არაცნობიერისაკენ."},
+        {q:"\"მოტივაცია\" ლათინური სიტყვაა და ნიშნავს:",correct:"მოძრაობას",options:["მოძრაობას","ძალას","ენერგიას","სურვილს"],explain:"\"მოტივაცია\" ლათ. movere — მოძრაობა. ფიზიკური და ფსიქიკური აქტივობის დაწყების, მიმართულების და მართვის პროცესი."},
+        {q:"მოთხოვნილებათა იერარქიული პირამიდის ავტორია:",correct:"აბრაჰამ მასლოუ",options:["აბრაჰამ მასლოუ","კარლ როჯერსი","ზიგმუნდ ფროიდი","ბ.ფ.სკინერი"],explain:"აბრაჰამ მასლოუ (1908-1970) — ამერიკელი ჰუმანისტი ფსიქოლოგი, \"მოტივაცია და პიროვნება\" (1954)."},
+        {q:"ზრდადასრულებული, კულტურული ადამიანის ფსიქიკას სწავლობს:",correct:"ზოგადი ფსიქოლოგია",options:["ზოგადი ფსიქოლოგია","პათოფსიქოლოგია","ზოოფსიქოლოგია","ბავშვის ფსიქოლოგია"],explain:"ზოგადი ფსიქოლოგია შეისწავლის ზრდასრული, ნორმალური ადამიანის ფსიქიკის ძირითად კანონზომიერებებს."}
+      ];
+
+      // ============================================================
+      // CORE ENGINE
+      // ============================================================
+      let quizQuestions = [];
+      let currentIndex = 0;
+      let correctCount = 0;
+      let wrongCount = 0;
+      let skipCount = 0;
+      let startTime, timerInterval;
+      let answered = []; // null, "skipped", or choice
+
+      function setupMenu() {
+        const grid = document.getElementById("groups-grid");
+        const total = ALL_QUESTIONS.length;
+        const perGroup = 40;
+        for (let i = 0; i < total; i += perGroup) {
+          const end = Math.min(i + perGroup, total);
+          const btn = document.createElement("button");
+          btn.className = "btn-group";
+          btn.innerHTML = `ჯგუფი ${Math.floor(i / perGroup) + 1} <span class="range">${i + 1}-${end}</span>`;
+          btn.onclick = () => startQuiz("range", i, end);
+          grid.appendChild(btn);
+        }
+      }
+
+      function startQuiz(type, start = 0, end = 0) {
+        if (type === "all") {
+          quizQuestions = [...ALL_QUESTIONS];
+        } else {
+          quizQuestions = ALL_QUESTIONS.slice(start, end);
         }
 
-        function createGroups() {
-            const grid = document.getElementById('groups-grid');
-            const groupSize = 40;
-            const numGroups = Math.ceil(allQuestions.length / groupSize);
-            for (let i = 0; i < numGroups; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'btn btn-menu';
-                btn.innerText = `ჯგუფი ${i + 1}`;
-                btn.onclick = () => startQuiz(groupSize, i * groupSize);
-                grid.appendChild(btn);
-            }
+        currentIndex = 0;
+        correctCount = 0;
+        wrongCount = 0;
+        skipCount = 0;
+        answered = new Array(quizQuestions.length).fill(null);
+
+        document.getElementById("menu-screen").style.display = "none";
+        document.getElementById("quiz-screen").style.display = "block";
+        document.getElementById("results-screen").style.display = "none";
+
+        updateScoreUI();
+        showQuestion();
+        startTimer();
+      }
+
+      function showQuestion() {
+        const q = quizQuestions[currentIndex];
+        document.getElementById("q-num").textContent = `კითხვა ${currentIndex + 1} / ${quizQuestions.length}`;
+        document.getElementById("prog-info").textContent = `${currentIndex + 1} / ${quizQuestions.length}`;
+        document.getElementById("q-text").textContent = q.q;
+
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+
+        const letters = ["A", "B", "C", "D"];
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.innerHTML = `<div class="opt-letter">${letters[i]}</div> <span>${opt}</span>`;
+
+          if (answered[currentIndex] !== null && answered[currentIndex] !== "skipped") {
+            btn.disabled = true;
+            if (opt === q.correct) btn.classList.add("correct");
+            if (opt === answered[currentIndex] && opt !== q.correct) btn.classList.add("wrong");
+          } else {
+            btn.onclick = () => handleAnswer(opt, btn);
+          }
+          optionsDiv.appendChild(btn);
+        });
+
+        document.getElementById("prog-bar").style.width = `${((currentIndex + 1) / quizQuestions.length) * 100}%`;
+        document.getElementById("btn-prev").disabled = currentIndex === 0;
+        
+        // Handle explanation visibility
+        if (answered[currentIndex] !== null && answered[currentIndex] !== "skipped") {
+            showExplanationArea();
+        } else {
+            document.getElementById("explanation").style.display = "none";
+        }
+      }
+
+      function handleAnswer(selected, btn) {
+        const q = quizQuestions[currentIndex];
+        answered[currentIndex] = selected;
+
+        if (selected === q.correct) {
+          correctCount++;
+          btn.classList.add("correct");
+        } else {
+          wrongCount++;
+          btn.classList.add("wrong");
+          Array.from(document.getElementById("options").children).forEach((b) => {
+            if (b.innerText.includes(q.correct)) b.classList.add("reveal-correct");
+          });
         }
 
-        function startQuiz(limit, start = 0) {
-            currentQuestions = allQuestions.slice(start, start + limit);
-            currentIdx = 0;
-            score = 0;
-            seconds = 0;
-            userAnswers = {};
-            document.getElementById('start-menu').style.display = 'none';
-            document.getElementById('quiz-container').style.display = 'block';
-            startTimer();
-            showQuestion();
+        updateScoreUI();
+        showExplanationArea();
+        Array.from(document.getElementById("options").querySelectorAll(".opt-btn")).forEach(b => b.disabled = true);
+      }
+
+      function showExplanationArea() {
+        document.getElementById("explanation").style.display = "block";
+        document.getElementById("exp-text").textContent = quizQuestions[currentIndex].explain;
+      }
+
+      function skipQ() {
+        if (answered[currentIndex] === null) {
+          answered[currentIndex] = "skipped";
+          skipCount++;
+          updateScoreUI();
         }
+        nextQ();
+      }
 
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                seconds++;
-                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-                const secs = (seconds % 60).toString().padStart(2, '0');
-                document.getElementById('time-display').innerText = `${mins}:${secs}`;
-            }, 1000);
+      function nextQ() {
+        if (currentIndex < quizQuestions.length - 1) {
+          currentIndex++;
+          showQuestion();
+        } else {
+          showResults();
         }
+      }
 
-        function showQuestion() {
-            const q = currentQuestions[currentIdx];
-            document.getElementById('progress-text').innerText = `კითხვა ${currentIdx + 1} / ${currentQuestions.length}`;
-            document.getElementById('question-text').innerText = q.q;
-            document.getElementById('explanation-box').innerText = q.explain;
-            document.getElementById('explanation-box').style.display = 'none';
-            document.getElementById('explain-btn').style.display = 'none';
-
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-
-            q.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'btn option-btn';
-                btn.innerText = opt;
-                
-                // If already answered
-                if (userAnswers[currentIdx]) {
-                    highlightAnswer(btn, opt, q.correct);
-                }
-
-                btn.onclick = () => {
-                    if (!userAnswers[currentIdx]) {
-                        userAnswers[currentIdx] = opt;
-                        highlightAnswer(btn, opt, q.correct);
-                        if (opt === q.correct) score++;
-                        document.getElementById('explain-btn').style.display = 'block';
-                    }
-                };
-                container.appendChild(btn);
-            });
-            
-            if (userAnswers[currentIdx]) {
-                document.getElementById('explain-btn').style.display = 'block';
-            }
+      function prevQ() {
+        if (currentIndex > 0) {
+          currentIndex--;
+          showQuestion();
         }
+      }
 
-        function highlightAnswer(btn, selected, correct) {
-            if (selected === correct) {
-                btn.classList.add('correct-choice');
-            } else if (userAnswers[currentIdx] === selected) {
-                btn.classList.add('wrong-choice');
-                // Also highlight correct one if wrong was picked
-                Array.from(document.getElementsByClassName('option-btn')).forEach(b => {
-                    if (b.innerText === correct) b.classList.add('correct-choice');
-                });
-            }
-        }
+      function updateScoreUI() {
+        document.getElementById("sc-correct").textContent = `✓ ${correctCount}`;
+        document.getElementById("sc-wrong").textContent = `✗ ${wrongCount}`;
+        document.getElementById("sc-skip").textContent = `↷ ${skipCount}`;
+      }
 
-        function toggleExplanation() {
-            const box = document.getElementById('explanation-box');
-            box.style.display = box.style.display === 'none' ? 'block' : 'none';
-        }
+      function startTimer() {
+        startTime = Date.now();
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          const elapsed = Math.floor((Date.now() - startTime) / 1000);
+          const m = Math.floor(elapsed / 60);
+          const s = elapsed % 60;
+          document.getElementById("timer").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+        }, 1000);
+      }
 
-        function nextQuestion() {
-            if (currentIdx < currentQuestions.length - 1) {
-                currentIdx++;
-                showQuestion();
-            } else {
-                finishQuiz();
-            }
-        }
+      function showResults() {
+        clearInterval(timerInterval);
+        document.getElementById("quiz-screen").style.display = "none";
+        document.getElementById("results-screen").style.display = "block";
 
-        function prevQuestion() {
-            if (currentIdx > 0) {
-                currentIdx--;
-                showQuestion();
-            }
-        }
+        const total = quizQuestions.length;
+        const pct = Math.round((correctCount / total) * 100);
 
-        function finishQuiz() {
-            clearInterval(timerInterval);
-            document.getElementById('quiz-container').style.display = 'none';
-            document.getElementById('results-screen').style.display = 'block';
-            document.getElementById('final-score').innerText = `შენი შედეგი: ${score} / ${currentQuestions.length}`;
-        }
+        document.getElementById("res-score").textContent = `${correctCount}/${total}`;
+        document.getElementById("res-pct").textContent = `${pct}% სწორი პასუხი`;
+        document.getElementById("res-correct").textContent = correctCount;
+        document.getElementById("res-wrong").textContent = wrongCount;
+        document.getElementById("res-skip").textContent = skipCount;
+        document.getElementById("res-time").textContent = `⏱ გასული დრო: ${document.getElementById("timer").textContent}`;
+      }
 
-        function saveProgress() {
-            const state = {
-                currentIdx,
-                currentQuestions,
-                userAnswers,
-                seconds,
-                score
-            };
-            localStorage.setItem('psych_quiz_save', JSON.stringify(state));
-            alert('პროგრესი შენახულია!');
-        }
+      function goMenu() {
+        clearInterval(timerInterval);
+        document.getElementById("quiz-screen").style.display = "none";
+        document.getElementById("results-screen").style.display = "none";
+        document.getElementById("menu-screen").style.display = "flex";
+      }
 
-        function loadSavedProgress() {
-            const saved = localStorage.getItem('psych_quiz_save');
-            if (saved && confirm('გსურთ შენახული პროგრესის გაგრძელება?')) {
-                const data = JSON.parse(saved);
-                currentQuestions = data.currentQuestions;
-                currentIdx = data.currentIdx;
-                userAnswers = data.userAnswers;
-                seconds = data.seconds;
-                score = data.score;
-                document.getElementById('start-menu').style.display = 'none';
-                document.getElementById('quiz-container').style.display = 'block';
-                startTimer();
-                showQuestion();
-            }
-        }
-
-        loadData();
+      setupMenu();
     </script>
-</body>
+  </body>
 </html>
